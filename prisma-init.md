@@ -104,3 +104,5 @@ getUserById(id)
 ```
 
 That's enough for the first version.
+
+docs link `https://www.prisma.io/docs/prisma-orm/quickstart/prisma-postgres`
