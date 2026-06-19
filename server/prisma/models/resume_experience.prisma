@@ -1,0 +1,11 @@
+model ResumeExperience {
+  id          Int      @id @default(autoincrement())
+  company     String
+  title       String
+  start_date  DateTime
+  end_date    DateTime
+  description String
+  
+  resume_id   Int
+  resume      Resume   @relation(fields: [resume_id], references: [id], onDelete: Cascade)
+}

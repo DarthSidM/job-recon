@@ -1,0 +1,7 @@
+model ResumeSkills {
+  id          Int  @id @default(autoincrement())
+  skill_names Json
+
+  resume_id Int
+  resume    Resume @relation(fields: [resume_id], references: [id], onDelete: Cascade)
+}

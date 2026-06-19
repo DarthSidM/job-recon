@@ -1,0 +1,8 @@
+model ResumeProject {
+  id           Int    @id @default(autoincrement())
+  project_name String
+  description  String
+
+  resume_id Int
+  resume    Resume @relation(fields: [resume_id], references: [id], onDelete: Cascade)
+}
