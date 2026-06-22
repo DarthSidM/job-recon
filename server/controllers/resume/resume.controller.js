@@ -6,6 +6,7 @@ export async function createResumeController(req, res) {
     const name = req.body?.name;
     const pdf = req.file;
     // console.log(id);
+    console.log(name);
     console.log(pdf);
     
     if(!id || !name || !pdf){

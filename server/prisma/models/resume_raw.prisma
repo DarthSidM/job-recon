@@ -1,10 +1,6 @@
-model ResumeProfile {
+model ResumeRaw {
   id        Int    @id @default(autoincrement())
-  full_name String
-  email     String
-  phone     Int
-  summary   String
-
+  raw_text  String
   resume_id Int
   resume    Resume @relation(fields: [resume_id], references: [id], onDelete: Cascade)
 }

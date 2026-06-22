@@ -1,14 +1,15 @@
 model Resume {
-  id                Int                @id @default(autoincrement())
-  name              String
-  storage_url       String
-  status            Boolean            @default(false) // tells if the resume is active or not
-  user_id           Int // foreign relation to user model
-  user              User               @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  
+  id          Int     @id @default(autoincrement())
+  name        String
+  storage_url String
+  status      Boolean @default(false) // tells if the resume is active or not
+  user_id     Int // foreign relation to user model
+  user        User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
   resumeProfiles    ResumeProfile[]
   resumeEducations  ResumeEducation[]
   resumeExperiences ResumeExperience[]
   resumeProjects    ResumeProject[]
   resumeSkills      ResumeSkills[]
+  resumeRaws        ResumeRaw[]
 }
