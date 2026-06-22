@@ -2,6 +2,10 @@
 
 `sqlacodegen "db_url" > models.py`
 
+or if you only want a specific table's model
+
+`sqlacodegen "db_url" --table table_name > models.py`
+
 ## structure
 app/
 1. core contains important functions such as db connection and celery starter

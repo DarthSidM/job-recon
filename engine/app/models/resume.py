@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from .resume_profile import ResumeProfile
     from .resume_project import ResumeProject
     from .resume_skills import ResumeSkills
+    from .resume_raw import ResumeRaw
 
 
 class Resume(Base):
@@ -33,3 +34,4 @@ class Resume(Base):
     ResumeProfile: Mapped[list['ResumeProfile']] = relationship('ResumeProfile', back_populates='resume')
     ResumeProject: Mapped[list['ResumeProject']] = relationship('ResumeProject', back_populates='resume')
     ResumeSkills: Mapped[list['ResumeSkills']] = relationship('ResumeSkills', back_populates='resume')
+    ResumeRaw: Mapped[list['ResumeRaw']] = relationship('ResumeRaw', back_populates='resume')
