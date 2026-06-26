@@ -1,0 +1,8 @@
+model ResumeEmbedding {
+  id             Int                   @id @default(autoincrement())
+  embedding_type String
+  embedding      Unsupported("vector")
+  model_name     String
+  resume_id      Int
+  resume         Resume                @relation(fields: [resume_id], references: [id], onDelete: Cascade)
+}

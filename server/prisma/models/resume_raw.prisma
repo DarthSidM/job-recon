@@ -1,6 +1,6 @@
 model ResumeRaw {
   id        Int    @id @default(autoincrement())
-  raw_text  String
+  raw_text  Json
   resume_id Int
   resume    Resume @relation(fields: [resume_id], references: [id], onDelete: Cascade)
 }

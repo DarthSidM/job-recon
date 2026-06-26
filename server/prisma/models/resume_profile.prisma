@@ -1,9 +1,9 @@
 model ResumeProfile {
-  id        Int    @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   full_name String
   email     String
-  phone     Int
-  summary   String
+  phone     String
+  summary   String?
 
   resume_id Int
   resume    Resume @relation(fields: [resume_id], references: [id], onDelete: Cascade)

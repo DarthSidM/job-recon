@@ -12,4 +12,5 @@ model Resume {
   resumeProjects    ResumeProject[]
   resumeSkills      ResumeSkills[]
   resumeRaws        ResumeRaw[]
+  resumeEmbedding0  ResumeEmbedding[]
 }
