@@ -18,8 +18,8 @@ class ResumeEducation(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     institution: Mapped[str] = mapped_column(Text, nullable=False)
     degree: Mapped[str] = mapped_column(Text, nullable=False)
-    start_date: Mapped[datetime.datetime] = mapped_column(TIMESTAMP(precision=3), nullable=False)
-    end_date: Mapped[datetime.datetime] = mapped_column(TIMESTAMP(precision=3), nullable=False)
     resume_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    start_date: Mapped[Optional[datetime.datetime]] = mapped_column(TIMESTAMP(precision=3))
+    end_date: Mapped[Optional[datetime.datetime]] = mapped_column(TIMESTAMP(precision=3))
 
     resume: Mapped['Resume'] = relationship('Resume', back_populates='ResumeEducation')

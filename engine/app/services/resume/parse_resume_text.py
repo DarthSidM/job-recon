@@ -8,7 +8,76 @@ client = OpenAI(
 
 def parse_text(resume_text: str):
     model_name = LLM_MODEL
-    prompt = f"parse this resume text into json and dont produce any other output the resume text: {resume_text}"
+    prompt = prompt = f"""
+You are an information extraction engine.
+
+Extract the resume information and return ONLY valid JSON.
+
+IMPORTANT RULES:
+
+1. Return ONLY JSON.
+2. Do NOT include markdown.
+3. Do NOT include explanations.
+4. Do NOT create fields not defined in the schema.
+5. Missing values should be null.
+6. Dates must be returned in ISO format:
+   YYYY-MM-DD
+
+7. Work experience, internships, research internships,
+   leadership roles and part-time jobs must ALL be placed
+   inside resume_experience.
+
+8. Projects must ALL be placed inside resume_projects.
+
+9. Skills must be returned as a flat list of strings.
+
+Return JSON matching EXACTLY this schema:
+
+{{
+  "resume_profile": {{
+    "full_name": "",
+    "email": "",
+    "phone": "",
+    "summary": ""
+  }},
+
+  "resume_education": [
+    {{
+      "institution": "",
+      "degree": "",
+      "start_date": "",
+      "end_date": ""
+    }}
+  ],
+
+  "resume_experience": [
+    {{
+      "company": "",
+      "title": "",
+      "start_date": "",
+      "end_date": "",
+      "description": ""
+    }}
+  ],
+
+  "resume_projects": [
+    {{
+      "project_name": "",
+      "description": ""
+    }}
+  ],
+
+  "resume_skills": {{
+    "skill_names": []
+  }}
+}}
+
+Resume text:
+
+{resume_text}
+
+Return ONLY the JSON object.
+"""
     try:
         response = client.chat.completions.create(
             model=model_name,

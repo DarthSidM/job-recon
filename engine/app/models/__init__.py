@@ -6,3 +6,4 @@ from .resume_profile import ResumeProfile
 from .resume_project import ResumeProject
 from .resume_skills import ResumeSkills
 from .resume_raw import ResumeRaw
+from .resume_embedding import ResumeEmbedding

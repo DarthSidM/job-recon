@@ -1,6 +1,7 @@
 from typing import Optional, TYPE_CHECKING
 from sqlalchemy import Boolean, ForeignKeyConstraint, Index, Integer, PrimaryKeyConstraint, Text, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.dialects.postgresql import JSONB
 from app.core.database import Base
 if TYPE_CHECKING:
     from .resume import Resume
@@ -13,7 +14,7 @@ class ResumeRaw(Base):
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    raw_text: Mapped[str] = mapped_column(Text, nullable=False)
     resume_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    raw_text: Mapped[dict] = mapped_column(JSONB, nullable=False)
 
     resume: Mapped['Resume'] = relationship('Resume', back_populates='ResumeRaw')

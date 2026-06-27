@@ -13,6 +13,8 @@ class Base(DeclarativeBase):
 engine = create_async_engine(
     DATABASE_URL,
     connect_args={"ssl": True},
+    pool_pre_ping=True,
+    pool_recycle=300,
     echo=True
 )
 

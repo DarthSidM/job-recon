@@ -18,8 +18,8 @@ class ResumeProfile(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     full_name: Mapped[str] = mapped_column(Text, nullable=False)
     email: Mapped[str] = mapped_column(Text, nullable=False)
-    phone: Mapped[int] = mapped_column(Integer, nullable=False)
-    summary: Mapped[str] = mapped_column(Text, nullable=False)
+    phone: Mapped[str] = mapped_column(Text, nullable=False)
     resume_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    summary: Mapped[Optional[str]] = mapped_column(Text)
 
     resume: Mapped['Resume'] = relationship('Resume', back_populates='ResumeProfile')
