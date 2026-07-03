@@ -13,19 +13,18 @@ class Job(BaseModel):
 
     source: str            # "lever"
     source_job_id: str     # "123456"
-    source_url: HttpUrl
+    source_url: str
     company: str
-
+    apply_url: str
     is_active: bool = True
 
-    titles: list[str] = Field(default_factory=list)
+    title: str
 
-    locations: list[str] = Field(default_factory=list)
+    location: str
 
     employment_type: Optional[str] = None
 
     first_seen_at: Optional[datetime] = None
-    last_seen_at: Optional[datetime] = None
     missing_count: int = 0
 
     # Compensation
