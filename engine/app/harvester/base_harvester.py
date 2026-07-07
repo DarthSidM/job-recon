@@ -60,7 +60,8 @@ class BaseHarvester(ABC):
         {{
             "skills": ["skill_1", "skill_2"],
             "salary_min": "minimum value or null",
-            "salary_max": "maximum value or null"
+            "salary_max": "maximum value or null",
+            "exp_min": "minimum number of years of experience required or 0",
         }}
         
         If any value is missing or not understandable, put it as null. Do not return any conversational text, just the raw JSON block.

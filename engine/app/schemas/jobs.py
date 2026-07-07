@@ -36,7 +36,6 @@ class Job(BaseModel):
 
     # Experience in years
     exp_min: Optional[float] = None
-    exp_max: Optional[float] = None
 
     # Complete normalized job description
     job_description: str

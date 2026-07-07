@@ -2,6 +2,7 @@ import csv
 from .registry import HARVESTER
 
 def process_final_lever(csv_path):
+    print("started processing...")
     """Read tokens and source from final_lever.csv and invoke the appropriate harvester."""
     with open(csv_path, newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)

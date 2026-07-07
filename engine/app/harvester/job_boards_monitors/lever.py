@@ -3,7 +3,7 @@ import requests
 import json
 from playwright.sync_api import sync_playwright
 from app.harvester.base_harvester import BaseHarvester
-from app.services.harvester.parsed_text_cleanup import strip_thought_tags
+from app.services.harvester.parsed_text_cleanup import strip_thought_tags, normalize_json
 from app.schemas.jobs import Job
 
 
@@ -23,16 +23,17 @@ class LeverHarvester(BaseHarvester):
 
         if not self.jobs:
             return
-        self.print_jobs()
         print("__________________ llm output coming __________________")
         for job in self.jobs:
             llm_res = self.extract_details(job)
             cleaned_llm_res = strip_thought_tags(llm_res)
-            data = json.dumps(cleaned_llm_res)
+            data = normalize_json(cleaned_llm_res)
+            print(data)
             job["skills"] = data.get("skills", [])
             job["salary_min"] = data.get("salary_min", None)
             job["salary_max"] = data.get("salary_max", None)
-            
+            job["exp_min"] = data.get("exp_min", 0)
+        self.print_jobs() 
         # await self.repository.upsert_jobs(
         #     source=self.source,
         #     company=self.company,
