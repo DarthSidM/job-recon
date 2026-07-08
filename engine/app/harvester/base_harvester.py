@@ -21,9 +21,85 @@ class BaseHarvester(ABC):
     async def fetch_jobs(self) -> List[Job]:
         raise NotImplementedError
     
-    @abstractmethod
-    def normalize(self): # llm jd clean up to extract stuff like skills, exp reqd, salary offered 
-        pass
+    def normalize(self, job: Dict[str, Any]) -> Job:
+        """
+        Converts a raw harvested job dict into a validated Job object.
+        Also cleans common LLM inconsistencies.
+        """
+
+        def to_int(value):
+            if value in (None, "", "null"):
+                return None
+            try:
+                return int(float(value))
+            except (TypeError, ValueError):
+                return None
+
+        def to_float(value):
+            if value in (None, "", "null"):
+                return None
+            try:
+                return float(value)
+            except (TypeError, ValueError):
+                return None
+
+        def clean_skills(skills):
+            if not skills:
+                return []
+
+            if isinstance(skills, str):
+                skills = [s.strip() for s in skills.split(",")]
+
+            cleaned = []
+            seen = set()
+
+            for skill in skills:
+                if not skill:
+                    continue
+
+                skill = str(skill).strip()
+
+                if not skill:
+                    continue
+
+                key = skill.lower()
+                if key not in seen:
+                    seen.add(key)
+                    cleaned.append(skill)
+
+            return cleaned
+
+        first_seen = job.get("first_seen_at")
+        if isinstance(first_seen, str):
+            try:
+                first_seen = datetime.fromisoformat(first_seen)
+            except ValueError:
+                first_seen = None
+
+        return Job(
+            source=job["source"],
+            source_job_id=str(job["source_job_id"]),
+            source_url=job["source_url"],
+            company=job["company"],
+            apply_url=job["apply_url"],
+            is_active=job.get("is_active", True),
+
+            title=job["title"],
+            location=job["location"],
+            employment_type=job.get("employment_type"),
+
+            first_seen_at=first_seen,
+            missing_count=job.get("missing_count", 0),
+
+            salary_min=to_int(job.get("salary_min")),
+            salary_max=to_int(job.get("salary_max")),
+
+            skills=clean_skills(job.get("skills")),
+
+            exp_min=to_float(job.get("exp_min")),
+
+            job_description=job["job_description"],
+        )
 
     def now(self):
         return datetime.now()

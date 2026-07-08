@@ -5,7 +5,7 @@ from playwright.sync_api import sync_playwright
 from app.harvester.base_harvester import BaseHarvester
 from app.services.harvester.parsed_text_cleanup import strip_thought_tags, normalize_json
 from app.schemas.jobs import Job
-
+from datetime import datetime
 
 class LeverHarvester(BaseHarvester):
     source = "lever"
@@ -23,6 +23,7 @@ class LeverHarvester(BaseHarvester):
 
         if not self.jobs:
             return
+        normalized_jobs = []
         print("__________________ llm output coming __________________")
         for job in self.jobs:
             llm_res = self.extract_details(job)
@@ -33,7 +34,9 @@ class LeverHarvester(BaseHarvester):
             job["salary_min"] = data.get("salary_min", None)
             job["salary_max"] = data.get("salary_max", None)
             job["exp_min"] = data.get("exp_min", 0)
-        self.print_jobs() 
+            normalized_jobs.append(self.normalize(job=job))
+        self.jobs = normalized_jobs
+        self.print_normalized_jobs() 
         # await self.repository.upsert_jobs(
         #     source=self.source,
         #     company=self.company,
@@ -79,9 +82,6 @@ class LeverHarvester(BaseHarvester):
             print(f"Error fetching jobs from Lever for {self.company}: {e}")
             return []
 
-    def normalize(self):
-        pass
-
     def launch_playwright(self, hostedUrl):
         url = hostedUrl
         with sync_playwright() as p:
@@ -92,6 +92,15 @@ class LeverHarvester(BaseHarvester):
             browser.close()
             return jd
         
-    def print_jobs(self):
+    def print_jobs(self): ###### only use during debugging
         pretty_json = json.dumps(self.jobs, indent=4, ensure_ascii=False)
         print(pretty_json)
+    def print_normalized_jobs(self):
+        """Only use during debugging."""
+        print(
+            json.dumps(
+                [job.model_dump(mode="json") for job in self.jobs],
+                indent=4,
+                ensure_ascii=False,
+            )
+        )
