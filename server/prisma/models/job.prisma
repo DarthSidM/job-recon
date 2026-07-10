@@ -1,0 +1,39 @@
+model Job {
+  id Int @id @default(autoincrement())
+
+  // Source metadata
+  source      String
+  sourceJobId String
+  sourceUrl   String
+  company     String
+  applyUrl    String
+  isActive    Boolean @default(true)
+
+  // Job details
+  title          String
+  location       String
+  employmentType String?
+
+  // Tracking
+  firstSeenAt  DateTime @default(now())
+  lastSeenAt   DateTime @updatedAt
+  missingCount Int      @default(0)
+
+  // Compensation
+  salaryMin Int?
+  salaryMax Int?
+
+  // NLP extracted
+  skills String[]
+  expMin Float?
+
+  // Complete job description
+  jobDescription String @db.Text
+
+  @@unique([source, sourceJobId])
+  @@index([company])
+  @@index([title])
+  @@index([location])
+  @@index([isActive])
+  @@index([firstSeenAt])
+}
