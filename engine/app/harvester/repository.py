@@ -2,7 +2,7 @@ from typing import Dict, List
 from datetime import datetime
 
 from sqlalchemy import select
-
+from app.services.harvester.embedder import embed
 from app.schemas.jobs import Job
 from app.core.database_sync import SessionLocal
 from app.models.job import Job as JobRecord
@@ -51,6 +51,9 @@ class JobRepository:
         )
 
         self._mark_missing_jobs(missing_jobs)
+
+        jobs_to_insert = self._embed_jobs(jobs_to_insert)
+        jobs_to_update = self._embed_jobs(jobs_to_update)
         self._upsert_jobs(jobs_to_insert, jobs_to_update)
         print(f"[repo.sync_jobs] complete source={source} company={company}")
 
@@ -195,6 +198,8 @@ class JobRepository:
                             salaryMax=job.salary_max,
                             skills=job.skills,
                             expMin=job.exp_min,
+                            embedding=job.jd_embedding,
+                            model=job.embedding_model,
                         )
                     )
                     continue
@@ -241,6 +246,23 @@ class JobRepository:
                 record.salaryMax = job.salary_max
                 record.skills = job.skills
                 record.expMin = job.exp_min
+                record.embedding = job.jd_embedding
+                record.model = job.embedding_model
 
             db.commit()
             print("[repo.upsert_jobs] commit complete")
+
+    def _embed_jobs(self, jobs: List[Job]) -> List[Job]:
+        if not jobs:
+            return jobs
+
+        for job in jobs:
+            if not job.job_description:
+                continue
+
+            embedding, model = embed(job.job_description)
+
+            job.jd_embedding = embedding
+            job.embedding_model = model
+
+        return jobs

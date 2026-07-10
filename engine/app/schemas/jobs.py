@@ -39,3 +39,6 @@ class Job(BaseModel):
 
     # Complete normalized job description
     job_description: str
+    
+    jd_embedding: Optional[list[float]] = None
+    embedding_model: Optional[str] = None

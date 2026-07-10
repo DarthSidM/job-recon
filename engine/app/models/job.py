@@ -1,10 +1,10 @@
 # Using pgvector 0.4.2
-from typing import Optional
+from typing import Optional, TYPE_CHECKING, Any
 import datetime
-
+from pgvector.sqlalchemy.vector import VECTOR
 from sqlalchemy import Boolean, Double, Index, Integer, PrimaryKeyConstraint, Text, text
 from sqlalchemy.dialects.postgresql import ARRAY, TIMESTAMP
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
 
 class Job(Base):
@@ -37,3 +37,5 @@ class Job(Base):
     salaryMax: Mapped[Optional[int]] = mapped_column(Integer)
     skills: Mapped[Optional[list[str]]] = mapped_column(ARRAY(Text()))
     expMin: Mapped[Optional[float]] = mapped_column(Double(53))
+    embedding: Mapped[Optional[Any]] = mapped_column(VECTOR)
+    model: Mapped[Optional[str]] = mapped_column(Text)

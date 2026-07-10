@@ -36,6 +36,7 @@ class LeverHarvester(BaseHarvester):
             job["exp_min"] = data.get("exp_min", 0)
             normalized_jobs.append(self.normalize(job=job))
 
+
         self.jobs = normalized_jobs
         print(f"[lever.harvest] normalized_jobs={len(self.jobs)}")
         self.print_normalized_jobs() 
@@ -96,7 +97,7 @@ class LeverHarvester(BaseHarvester):
         pretty_json = json.dumps(self.jobs, indent=4, ensure_ascii=False)
         print(pretty_json)
 
-    def print_normalized_jobs(self):
+    def print_normalized_jobs(self): ###### only use during debugging
         """Only use during debugging."""
         print(
             json.dumps(
