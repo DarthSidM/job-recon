@@ -28,7 +28,9 @@ model Job {
   expMin Float?
 
   // Complete job description
-  jobDescription String @db.Text
+  jobDescription String         @db.Text
+  embedding Unsupported("vector")?
+  model     String?   
 
   @@unique([source, sourceJobId])
   @@index([company])
