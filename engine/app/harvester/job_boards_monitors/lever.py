@@ -4,8 +4,7 @@ import json
 from playwright.sync_api import sync_playwright
 from app.harvester.base_harvester import BaseHarvester
 from app.services.harvester.parsed_text_cleanup import strip_thought_tags, normalize_json
-from app.schemas.jobs import Job
-from datetime import datetime
+
 
 class LeverHarvester(BaseHarvester):
     source = "lever"
@@ -18,30 +17,31 @@ class LeverHarvester(BaseHarvester):
         self.jobs = None
     
     def harvest(self) -> None:
-    
+        print(f"[lever.harvest] start company={self.company} playwright_reqd={self.playwright_reqd}")
         self.jobs = self.fetch_jobs()
+        print(f"[lever.harvest] fetched_jobs={len(self.jobs) if self.jobs else 0}")
 
         if not self.jobs:
+            print(f"[lever.harvest] no jobs fetched for company={self.company}")
             return
         normalized_jobs = []
-        print("__________________ llm output coming __________________")
         for job in self.jobs:
+            print(f"[lever.harvest] extracting details source_job_id={job.get('source_job_id')}")
             llm_res = self.extract_details(job)
             cleaned_llm_res = strip_thought_tags(llm_res)
             data = normalize_json(cleaned_llm_res)
-            print(data)
             job["skills"] = data.get("skills", [])
             job["salary_min"] = data.get("salary_min", None)
             job["salary_max"] = data.get("salary_max", None)
             job["exp_min"] = data.get("exp_min", 0)
             normalized_jobs.append(self.normalize(job=job))
+
         self.jobs = normalized_jobs
+        print(f"[lever.harvest] normalized_jobs={len(self.jobs)}")
         self.print_normalized_jobs() 
-        # await self.repository.upsert_jobs(
-        #     source=self.source,
-        #     company=self.company,
-        #     jobs=jobs
-        # )
+        print(f"[lever.harvest] syncing jobs source={self.source} company={self.company}")
+        self.repository.sync_jobs(self.source, self.company, self.jobs)
+        print(f"[lever.harvest] sync complete source={self.source} company={self.company}")
 
     def fetch_jobs(self) -> List[Dict[str, Any]]:
         lever_url = f"https://api.lever.co/v0/postings/{self.company}?mode=json"
@@ -95,6 +95,7 @@ class LeverHarvester(BaseHarvester):
     def print_jobs(self): ###### only use during debugging
         pretty_json = json.dumps(self.jobs, indent=4, ensure_ascii=False)
         print(pretty_json)
+
     def print_normalized_jobs(self):
         """Only use during debugging."""
         print(
@@ -104,3 +105,4 @@ class LeverHarvester(BaseHarvester):
                 ensure_ascii=False,
             )
         )
+

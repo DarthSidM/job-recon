@@ -14,11 +14,11 @@ class BaseHarvester(ABC):
     def __init__(self):
         self.repository = JobRepository()
 
-    async def harvest(self) -> None:
+    def harvest(self) -> None:
         pass
 
     @abstractmethod
-    async def fetch_jobs(self) -> List[Job]:
+    def fetch_jobs(self) -> List[Job]:
         raise NotImplementedError
     
     def normalize(self, job: Dict[str, Any]) -> Job:
