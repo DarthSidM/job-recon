@@ -18,31 +18,95 @@ class LeverHarvester(BaseHarvester):
     
     def harvest(self) -> None:
         print(f"[lever.harvest] start company={self.company} playwright_reqd={self.playwright_reqd}")
+
         self.jobs = self.fetch_jobs()
+
         print(f"[lever.harvest] fetched_jobs={len(self.jobs) if self.jobs else 0}")
 
         if not self.jobs:
             print(f"[lever.harvest] no jobs fetched for company={self.company}")
             return
-        normalized_jobs = []
-        for job in self.jobs:
-            print(f"[lever.harvest] extracting details source_job_id={job.get('source_job_id')}")
-            llm_res = self.extract_details(job)
-            cleaned_llm_res = strip_thought_tags(llm_res)
-            data = normalize_json(cleaned_llm_res)
-            job["skills"] = data.get("skills", [])
-            job["salary_min"] = data.get("salary_min", None)
-            job["salary_max"] = data.get("salary_max", None)
-            job["exp_min"] = data.get("exp_min", 0)
-            normalized_jobs.append(self.normalize(job=job))
 
+        BATCH_SIZE = 10
+        normalized_jobs = []
+
+        total_jobs = len(self.jobs)
+
+        for batch_start in range(0, total_jobs, BATCH_SIZE):
+            batch = self.jobs[batch_start: batch_start + BATCH_SIZE]
+
+            batch_no = batch_start // BATCH_SIZE + 1
+            total_batches = (total_jobs + BATCH_SIZE - 1) // BATCH_SIZE
+
+            print(
+                f"[lever.harvest] processing batch "
+                f"{batch_no}/{total_batches} "
+                f"({len(batch)} jobs)"
+            )
+
+            for job in batch:
+                source_job_id = job.get("source_job_id")
+
+                try:
+                    print(
+                        f"[lever.harvest] extracting details "
+                        f"source_job_id={source_job_id}"
+                    )
+
+                    llm_res = self.extract_details(job)
+                    cleaned_llm_res = strip_thought_tags(llm_res)
+                    data = normalize_json(cleaned_llm_res)
+
+                    job["skills"] = data.get("skills", [])
+                    job["salary_min"] = data.get("salary_min")
+                    job["salary_max"] = data.get("salary_max")
+                    job["exp_min"] = data.get("exp_min", 0)
+
+                    normalized_jobs.append(self.normalize(job=job))
+
+                except Exception as e:
+                    print(
+                        f"[lever.harvest] skipping malformed job "
+                        f"source_job_id={source_job_id}"
+                    )
+                    print(f"[lever.harvest] error={e}")
+
+                    if 'cleaned_llm_res' in locals():
+                        print("=" * 80)
+                        print(cleaned_llm_res)
+                        print("=" * 80)
+
+                    continue
+
+            print(
+                f"[lever.harvest] completed batch "
+                f"{batch_no}/{total_batches}"
+            )
 
         self.jobs = normalized_jobs
-        print(f"[lever.harvest] normalized_jobs={len(self.jobs)}")
-        self.print_normalized_jobs() 
-        print(f"[lever.harvest] syncing jobs source={self.source} company={self.company}")
-        self.repository.sync_jobs(self.source, self.company, self.jobs)
-        print(f"[lever.harvest] sync complete source={self.source} company={self.company}")
+
+        print(
+            f"[lever.harvest] normalized_jobs="
+            f"{len(self.jobs)}/{total_jobs}"
+        )
+
+        self.print_normalized_jobs()
+
+        print(
+            f"[lever.harvest] syncing jobs "
+            f"source={self.source} company={self.company}"
+        )
+
+        self.repository.sync_jobs(
+            self.source,
+            self.company,
+            self.jobs,
+        )
+
+        print(
+            f"[lever.harvest] sync complete "
+            f"source={self.source} company={self.company}"
+        )
 
     def fetch_jobs(self) -> List[Dict[str, Any]]:
         lever_url = f"https://api.lever.co/v0/postings/{self.company}?mode=json"
