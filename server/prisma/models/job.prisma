@@ -29,7 +29,7 @@ model Job {
 
   // Complete job description
   jobDescription String         @db.Text
-  embedding Unsupported("vector")?
+  embedding Unsupported("vector(2560)")?
   model     String?   
 
   @@unique([source, sourceJobId])
