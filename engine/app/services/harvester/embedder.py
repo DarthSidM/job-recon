@@ -9,6 +9,7 @@ def embed(job_description: str):
     response = client.embeddings.create(
         model=EMBEDDING_MODEL,
         input=job_description,
+        dimensions=1560
     )
 
     return response.data[0].embedding, EMBEDDING_MODEL

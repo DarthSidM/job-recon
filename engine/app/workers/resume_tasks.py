@@ -3,7 +3,7 @@ from app.core.celery_app import celery_app
 from app.services.resume.download_resume import resume_downloader
 from app.services.resume.extract_text_resume import text_extracter
 from app.services.resume.parse_resume_text import parse_text
-from app.services.resume.parsed_text_cleanup import strip_thought_tags
+from app.services.resume.parsed_text_cleanup import strip_thought_tags, normalize_json
 from app.services.resume.save_llm_text import save_resume
 from app.services.resume.check_raw_text import is_raw_available
 from app.services.resume.json_to_text import experience_to_text, projects_to_text, skills_to_text
@@ -36,7 +36,7 @@ def process_resume_task(resume_id: int, resume_url: str):
     print("the output of llm is: ", cleaned_llm_text)
 
     print("the output of json conversion")
-    data = json.loads(cleaned_llm_text)
+    data = normalize_json(cleaned_llm_text)
     print(data["resume_profile"]["full_name"])
 
     print("saving raw to db")
