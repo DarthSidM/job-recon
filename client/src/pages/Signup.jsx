@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Lock, Mail, User, Eye, EyeOff, Shield } from 'lucide-react';
+import { signup as signupUser } from '../apis/auth';
 
 export default function Signup() {
   const [name, setName] = useState('');
@@ -7,17 +9,22 @@ export default function Signup() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
     
-    // Simulate account creation pipeline
-    setTimeout(() => {
+    try {
+      await signupUser({ name, email, password });
+      navigate('/login');
+    } catch (err) {
+      setError(err.message || 'Unable to create account');
+    } finally {
       setIsLoading(false);
-      // Account registration logic goes here
-      console.log('Registering account:', { name, email, password });
-    }, 1200);
+    }
   };
 
   return (
@@ -44,15 +51,20 @@ export default function Signup() {
         </h2>
         <p className="mt-2 text-center text-sm text-slate-500">
           Already have an account?{' '}
-          <a href="/login" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
+          <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
             Sign in
-          </a>
+          </Link>
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto w-full max-w-md">
         <div className="bg-white py-8 px-4 border border-slate-200 shadow-xl rounded-2xl sm:px-10">
           <form className="space-y-5" onSubmit={handleSubmit}>
+            {error ? (
+              <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                {error}
+              </div>
+            ) : null}
             
             {/* Full Name Field */}
             <div>

@@ -1,22 +1,32 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Lock, Mail, Eye, EyeOff } from 'lucide-react';
+import { login as loginUser } from '../apis/auth';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
     
-    // Simulate authentication pipeline
-    setTimeout(() => {
+    try {
+      const data = await loginUser({ email, password });
+      if (data.jwt) {
+        localStorage.setItem('token', data.jwt);
+      }
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.message || 'Unable to sign in');
+    } finally {
       setIsLoading(false);
-      // Redirect logic goes here (e.g., history.push('/resumes'))
-      console.log('Authenticating:', { email, password });
-    }, 1200);
+    }
   };
 
   return (
@@ -43,15 +53,20 @@ export default function Login() {
         </h2>
         <p className="mt-2 text-center text-sm text-slate-500">
           Don't have an account?{' '}
-          <a href="#" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
+          <Link to="/signup" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
             Sign up for the beta
-          </a>
+          </Link>
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto w-full max-w-md">
         <div className="bg-white py-8 px-4 border border-slate-200 shadow-xl rounded-2xl sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {error ? (
+              <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                {error}
+              </div>
+            ) : null}
             
             {/* Email Field */}
             <div>
