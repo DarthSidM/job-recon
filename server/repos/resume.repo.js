@@ -31,3 +31,45 @@ export async function updateResumeById(id, resumeData) {
         data: resumeData
     });
 }
+
+export async function getActiveResume(userId){
+    return await prisma.resume.findFirst({
+        where:{
+            user_id: userId, 
+            status: true
+        }
+    });
+}
+
+export async function setActiveResume(userId, resumeId) {
+  return prisma.$transaction(async (tx) => {
+    const resume = await tx.resume.findFirst({
+      where: {
+        id: resumeId,
+        user_id: userId,
+      },
+    });
+
+    if (!resume) {
+      throw new Error("Resume not found");
+    }
+
+    await tx.resume.updateMany({
+      where: {
+        user_id: userId,
+      },
+      data: {
+        status: false,
+      },
+    });
+
+    return tx.resume.update({
+      where: {
+        id: resumeId,
+      },
+      data: {
+        status: true,
+      },
+    });
+  });
+}

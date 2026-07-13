@@ -1,4 +1,4 @@
-import { createResumeController, getResumeController, getAllResumesController } from "../controllers/resume/resume.controller.js";  
+import { createResumeController, getResumeController, getAllResumesController, setResumeActiveController } from "../controllers/resume/resume.controller.js";  
 import express from "express";
 import authenticationMiddleware from "../middlewares/auth.middleware.js"; 
 import multer from "multer";
@@ -17,5 +17,5 @@ const router = express.Router();
 router.post("/upload", authenticationMiddleware, upload.single("pdf"), createResumeController);
 router.get("/get/:resumeId", authenticationMiddleware, getResumeController);
 router.get("/get", authenticationMiddleware, getAllResumesController);
-
+router.post("/set-active", authenticationMiddleware, setResumeActiveController);
 export default router;

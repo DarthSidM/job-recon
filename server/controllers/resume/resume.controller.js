@@ -1,4 +1,4 @@
-import { createResume, getResumeById, getAllResumes } from "../../repos/resume.repo.js";
+import { createResume, getResumeById, getAllResumes, setActiveResume } from "../../repos/resume.repo.js";
 import { uploadPDF,deletePDF } from "../../lib/cloud.js";
 
 export async function createResumeController(req, res) {
@@ -77,3 +77,20 @@ export async function getResumeController(req, res){
          return res.status(500).json({ status: "failed", message: "failure" });
      }
  }
+
+export async function setResumeActiveController(req, res){
+    const { id } = req.user;
+    const { resume_id } = req.body;
+    try{
+        const resume = await setActiveResume(id, resume_id);
+        return res.status(200).json({
+            message : "resume set active",
+            status : "success",
+            resumeId: resume_id
+        });
+    }
+    catch(error){
+        console.log("error occurred setting resume as active", error);
+        return res.status(500).json({ status: "failed", message: "failure" })
+    }
+}
