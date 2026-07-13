@@ -1,5 +1,9 @@
 import { createResume, getResumeById, getAllResumes, setActiveResume } from "../../repos/resume.repo.js";
 import { uploadPDF,deletePDF } from "../../lib/cloud.js";
+import axios from "axios";
+import dotenv from "dotenv";
+dotenv.config();
+
 
 export async function createResumeController(req, res) {
     const { id } = req.user;
@@ -30,6 +34,10 @@ export async function createResumeController(req, res) {
             name, 
             storage_url: result.url,
             user_id: id
+        });
+        //add process resume controller calling here
+        axios.post(`${process.env.ENGINE_URL}/api/v2/process-resume/`,{
+            "resume_id":resume.id
         });
         console.log(`resume created for user with id ${id}`);
         return res.status(201).json({
