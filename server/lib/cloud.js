@@ -42,7 +42,26 @@ const uploadPDF = async (fileBuffer, filename = "resume") => {
 
 const deletePDF = async (publicId) => {
     try {
-        return await cloudinary.uploader.destroy(publicId, {
+        const resolvedPublicId = (() => {
+            if (!publicId) {
+                throw new Error('public id or storage url is required');
+            }
+
+            if (!String(publicId).includes('cloudinary.com')) {
+                return publicId;
+            }
+
+            const url = new URL(publicId);
+            const pathSegments = url.pathname.split('/').filter(Boolean);
+            const uploadIndex = pathSegments.indexOf('upload');
+            const assetSegments = uploadIndex >= 0 ? pathSegments.slice(uploadIndex + 1) : pathSegments;
+            const withoutVersion = assetSegments[0]?.startsWith('v') ? assetSegments.slice(1) : assetSegments;
+            const joined = withoutVersion.join('/');
+
+            return joined.replace(/\.[^./]+$/, '');
+        })();
+
+        return await cloudinary.uploader.destroy(resolvedPublicId, {
             resource_type: "raw",
         });
     } catch (error) {

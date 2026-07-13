@@ -32,6 +32,15 @@ export async function updateResumeById(id, resumeData) {
     });
 }
 
+export async function deleteResumeById(id, userId) {
+  return await prisma.resume.deleteMany({
+    where: {
+      id,
+      user_id: userId,
+    },
+  });
+}
+
 export async function getActiveResume(userId){
     return await prisma.resume.findFirst({
         where:{

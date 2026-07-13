@@ -1,5 +1,5 @@
-import { createResume, getResumeById, getAllResumes, setActiveResume } from "../../repos/resume.repo.js";
-import { uploadPDF,deletePDF } from "../../lib/cloud.js";
+import { createResume, getResumeById, getAllResumes, setActiveResume, deleteResumeById } from "../../repos/resume.repo.js";
+import { uploadPDF, deletePDF } from "../../lib/cloud.js";
 import axios from "axios";
 import dotenv from "dotenv";
 dotenv.config();
@@ -100,5 +100,43 @@ export async function setResumeActiveController(req, res){
     catch(error){
         console.log("error occurred setting resume as active", error);
         return res.status(500).json({ status: "failed", message: "failure" })
+    }
+}
+
+export async function deleteResumeController(req, res) {
+    try {
+        const { id: userId } = req.user;
+        const resumeId = Number(req.params.resumeId);
+
+        if (!resumeId) {
+            return res.status(400).json({
+                status: 'failed',
+                message: 'valid userId and resumeId are required',
+            });
+        }
+
+        const resume = await getResumeById(resumeId, userId);
+
+        if (!resume) {
+            return res.status(404).json({
+                status: 'failed',
+                message: 'resume not found',
+            });
+        }
+
+        await deletePDF(resume.storage_url);
+        await deleteResumeById(resumeId, userId);
+
+        return res.status(200).json({
+            status: 'success',
+            message: 'resume deleted successfully',
+            resumeId,
+        });
+    } catch (error) {
+        console.error('error occurred deleting resume', error);
+        return res.status(500).json({
+            status: 'failed',
+            message: 'failure',
+        });
     }
 }
