@@ -8,7 +8,7 @@ from app.services.resume.save_llm_text import save_resume
 from app.services.resume.check_raw_text import is_raw_available
 from app.services.resume.json_to_text import experience_to_text, projects_to_text, skills_to_text
 from app.services.resume.text_to_embeddings import experience_to_embedding, projects_to_embedding, skills_to_embedding
-import json
+from app.services.resume.resume_status import update_status
 
 @celery_app.task
 def process_resume_task(resume_id: int, resume_url: str):
@@ -16,10 +16,26 @@ def process_resume_task(resume_id: int, resume_url: str):
     if(is_raw_available(resume_id)):
         print(f"Resume {resume_id} already processed. Skipping.")
         return
+    
 
+    update_status(
+        resume_id,
+        "processing",
+        "downloading_resume",
+        5,
+        "Downloading resume"
+    )
     pdf_path = resume_downloader(resume_url, resume_id)
     print("resume downloaded")
     # extracted text from pdf
+
+    update_status(
+        resume_id,
+        "processing",
+        "extracting_text",
+        20,
+        "Extracting text"
+    )
     text_in_pages = text_extracter(pdf_path)
 
     print("text extracted")
@@ -31,6 +47,14 @@ def process_resume_task(resume_id: int, resume_url: str):
     )
 
     print("sending text to llm...")
+
+    update_status(
+        resume_id,
+        "processing",
+        "parsing_resume",
+        45,
+        "Parsing resume with AI"
+    )
     llm_text = parse_text(resume_text)
     cleaned_llm_text = strip_thought_tags(llm_text)
     print("the output of llm is: ", cleaned_llm_text)
@@ -39,10 +63,26 @@ def process_resume_task(resume_id: int, resume_url: str):
     data = normalize_json(cleaned_llm_text)
     print(data["resume_profile"]["full_name"])
 
+
     print("saving raw to db")
+    update_status(
+        resume_id,
+        "processing",
+        "saving_resume",
+        70,
+        "Saving parsed data"
+    )
     save_resume(resume_id, data)
     print("data saved")
 
+
+    update_status(
+        resume_id,
+        "processing",
+        "generating_embeddings",
+        85,
+        "Generating embeddings"
+    )
     experience_text = experience_to_text(data)
     if experience_text:
         # Generate experience embedding
@@ -58,3 +98,10 @@ def process_resume_task(resume_id: int, resume_url: str):
         # Generate skills embedding
         skills_to_embedding(skills_text, resume_id)
 
+    update_status(
+        resume_id,
+        "completed",
+        "completed",
+        100,
+        "Resume processed successfully"
+    )
