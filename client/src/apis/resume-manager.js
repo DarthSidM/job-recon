@@ -20,6 +20,10 @@ export function setResumeActive(resume_id) {
 	return api.post('/resume/set-active/', { resume_id });
 }
 
+export function getActiveResume(){
+    return api.get('/resume/get-active/');
+}
+
 export function getResumeStatus(resumeId) {
 	return api.get(`/resume/status/${resumeId}/`);
 }

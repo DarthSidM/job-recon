@@ -1,4 +1,4 @@
-import { createResume, getResumeById, getAllResumes, setActiveResume, deleteResumeById } from "../../repos/resume.repo.js";
+import { createResume, getResumeById, getAllResumes, setActiveResume, getActiveResume, deleteResumeById } from "../../repos/resume.repo.js";
 import { uploadPDF, deletePDF } from "../../lib/cloud.js";
 import axios from "axios";
 import dotenv from "dotenv";
@@ -84,7 +84,7 @@ export async function getResumeController(req, res){
          console.error("error occured getting all resumes", error);
          return res.status(500).json({ status: "failed", message: "failure" });
      }
- }
+}
 
 export async function setResumeActiveController(req, res){
     const { id } = req.user;
@@ -102,7 +102,22 @@ export async function setResumeActiveController(req, res){
         return res.status(500).json({ status: "failed", message: "failure" })
     }
 }
-
+export async function getActiveResumeController(req, res){
+    const { id } = req.user;
+    try{
+        const resume = await getActiveResume(id);
+        return res.status(200).json({
+            message: "active resume",
+            status: "success",
+            resumeId: resume.id,
+            resumeName: resume.name
+        });
+    }
+    catch(error){
+        console.log("error occurred while getting active resume", error);
+        return res.status(500).json({ status: "failed", message: "failure" })
+    }
+}
 export async function deleteResumeController(req, res) {
     try {
         const { id: userId } = req.user;

@@ -1,4 +1,5 @@
 import React from 'react';
+import MyJobs from '../my-jobs/MyJobs';
 import ResumeManager from '../resume-manager/ResumeManager';
 
 export default function MainArea({ activeTab, userName, quickCards, setActiveTab }) {
@@ -7,6 +8,10 @@ export default function MainArea({ activeTab, userName, quickCards, setActiveTab
 			{activeTab === 'Resume manager' ? (
 				<div className="p-6 md:p-8">
 					<ResumeManager />
+				</div>
+			) : activeTab === 'Jobs' ? (
+				<div className="p-6 md:p-8">
+					<MyJobs />
 				</div>
 			) : (
 				<div className="p-6 md:p-8 max-w-5xl mx-auto space-y-8">
