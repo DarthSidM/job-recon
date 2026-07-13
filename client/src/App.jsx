@@ -5,6 +5,7 @@ import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Protected from './components/Protected';
 import Public from './components/Public';
+import ResumeManager from './components/resume-manager/ResumeManager';
 function App() {
 
   return (
@@ -15,8 +16,10 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
         </Route>
-        
-        <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />
+
+        <Route element={<Protected />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   )

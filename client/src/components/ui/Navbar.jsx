@@ -6,6 +6,7 @@ export default function Navbar({ userName, routes, onNavigate }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
   // Filter routes based on user search query
+  
   const filteredRoutes = routes.filter(route => 
     route.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -17,7 +18,8 @@ export default function Navbar({ userName, routes, onNavigate }) {
 		} catch {
 			// no-op
 		}
-		navigate('/');
+    setIsDropdownOpen(false);
+    navigate('/login', { replace: true });
 	};
   return (
     <header className="bg-white border-b border-slate-200 h-16 fixed top-0 left-0 right-0 z-40 px-6 flex items-center justify-between">
