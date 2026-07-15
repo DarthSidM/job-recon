@@ -6,6 +6,8 @@ import MatchSummary from './MatchSummary';
 import JobFilters from './JobFilters';
 import JobGrid from './JobGrid';
 import JobDetailsDrawer from './JobDetailsDrawer';
+import ResumeChatDrawer from '../resume-builder/ResumeChatDrawer'
+
 
 export default function MyJobs() {
   const [jobs, setJobs] = useState([]);
@@ -13,7 +15,8 @@ export default function MyJobs() {
   const [selectedJob, setSelectedJob] = useState(null);
   const [activeResumeName, setActiveResumeName] = useState('');
   const [activeResumeLoading, setActiveResumeLoading] = useState(true);
-  
+  const [resumeDrawerOpen, setResumeDrawerOpen] = useState(false);
+  const [resumeJob, setResumeJob] = useState(null); 
   const [filters, setFilters] = useState({
     search: '',
     company: '',
@@ -102,6 +105,11 @@ export default function MyJobs() {
   const handleApply = (job) => {
     window.open(job.apply_url, '_blank', 'noopener,noreferrer');
   };
+  const handleCustomize = (job) => {
+      setResumeJob(job);
+      setResumeDrawerOpen(true);
+  };
+
 
   if (loading) {
     return (
@@ -138,12 +146,21 @@ export default function MyJobs() {
           uniqueLocations={uniqueLocations}
         />
 
-        <JobGrid 
+        <JobGrid
           jobs={filteredAndSortedJobs}
           onView={setSelectedJob}
           onApply={handleApply}
+          onCustomize={handleCustomize}
         />
-
+        <ResumeChatDrawer
+          open={resumeDrawerOpen}
+          job={resumeJob}
+          // activeResumeId={activeResumeId}
+          onClose={() => {
+              setResumeDrawerOpen(false);
+              setResumeJob(null);
+          }}
+      />
         {selectedJob && (
           <JobDetailsDrawer 
             job={selectedJob}

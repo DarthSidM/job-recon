@@ -1,7 +1,7 @@
 import React from 'react';
 import JobCard from './JobCard';
 
-export default function JobGrid({ jobs, onView, onApply }) {
+export default function JobGrid({ jobs, onView, onApply, onCustomize, }) {
   if (jobs.length === 0) {
     return (
       <div className="text-center py-12 bg-white border border-slate-200 rounded-xl shadow-sm">
@@ -19,7 +19,8 @@ export default function JobGrid({ jobs, onView, onApply }) {
           key={job.source_job_id} 
           job={job} 
           onView={onView} 
-          onApply={onApply} 
+          onApply={onApply}
+          onCustomize={onCustomize} 
         />
       ))}
     </div>

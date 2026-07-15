@@ -4,17 +4,20 @@ import {
     getProjects,
     getSkills,
 } from "../../repos/resume_elements.repo.js";
+import { getActiveResume } from "../../repos/resume.repo.js";
 
 const ENGINE_API_URL = process.env.ENGINE_URL || "http://localhost:8000";
 
 export const buildResume = async (req, res) => {
-    const { active_resume_id, message, jd, session_id } = req.body;
-
+    const {id} = req.user;
+    const { message, jd, session_id } = req.body;
+    console.log(req.body);
     try {
+        const active_resume_id = await getActiveResume(id);
         const [experienceData, projectData, skillData] = await Promise.all([
-            getExperience(active_resume_id),
-            getProjects(active_resume_id),
-            getSkills(active_resume_id),
+            getExperience(active_resume_id.id),
+            getProjects(active_resume_id.id),
+            getSkills(active_resume_id.id),
         ]);
 
         const experience = experienceData
