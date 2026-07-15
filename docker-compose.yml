@@ -1,0 +1,59 @@
+services:
+  server:
+    build: ./server
+    env_file:
+      - ./server/.env.docker
+    ports:
+      - "8000:8000"
+    depends_on:
+      - engine
+      - redis
+    restart: unless-stopped
+
+  engine:
+    build: ./engine
+    command: python -m app.main
+    env_file:
+      - ./engine/app/.env.docker
+    depends_on:
+      - redis
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  resume-worker:
+    build: ./engine
+    command: celery -A app.core.celery_app worker -Q resume --loglevel=info
+    env_file:
+      - ./engine/app/.env.docker
+    depends_on:
+      - redis
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  jobs-worker:
+    build: ./engine
+    command: celery -A app.core.celery_app worker -Q jobs --loglevel=info
+    env_file:
+      - ./engine/app/.env.docker
+    depends_on:
+      - redis
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  beat:
+    build: ./engine
+    command: celery -A app.core.celery_app beat --loglevel=info
+    env_file:
+      - ./engine/app/.env.docker
+    depends_on:
+      - redis
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  redis:
+    image: redis:latest
+    restart: unless-stopped

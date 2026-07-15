@@ -1,6 +1,7 @@
 *.notes.md
 node_modules
 .env
+.env.docker
 generated
 venv
 __pycache__
