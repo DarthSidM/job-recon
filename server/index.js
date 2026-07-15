@@ -5,6 +5,7 @@ import authRouter from './routes/auth.routes.js'
 import userRouter from './routes/user.routes.js'
 import resumeRouter from './routes/resume.routes.js'
 import matcherRouter from './routes/matcher.routes.js'
+import resumeBuilderRouter from './routes/resume-builder.routes.js'
 
 const app = express();
 const port = process.env.PORT;
@@ -23,6 +24,7 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/resume', resumeRouter);
 app.use('/api/v1/matcher', matcherRouter);
+app.use('/api/v1/builder', resumeBuilderRouter);
 
 
 app.get('/', (req, res)=>{
