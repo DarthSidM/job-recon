@@ -8,6 +8,7 @@ load_dotenv(APP_ROOT / ".env")
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 REDIS_URL = os.getenv("REDIS_URL")
+REDIS_RESUME_BUILDER_HOST = os.getenv("REDIS_RESUME_BUILDER_HOST")
 LLM_BASE_URL = os.getenv("LLM_BASE_URL")
 LLM_API_KEY = os.getenv("LLM_API_KEY")
 LLM_MODEL = os.getenv("LLM_MODEL")

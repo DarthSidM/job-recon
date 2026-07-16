@@ -1,6 +1,6 @@
 import json
 from uuid import uuid4, UUID
-
+from app.core.config import REDIS_RESUME_BUILDER_HOST
 from redis import Redis
 
 
@@ -9,7 +9,7 @@ class MemoryLLM:
 
     def __init__(self):
         self.redis = Redis(
-            host="localhost",
+            host=REDIS_RESUME_BUILDER_HOST,
             port=6379,
             db=1,
             decode_responses=True
