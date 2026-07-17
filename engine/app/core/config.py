@@ -13,8 +13,12 @@ LLM_BASE_URL = os.getenv("LLM_BASE_URL")
 LLM_API_KEY = os.getenv("LLM_API_KEY")
 LLM_MODEL = os.getenv("LLM_MODEL")
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
+EMBEDDING_MODEL_BASE_URL = os.getenv("EMBEDDING_MODEL_BASE_URL")
+
 # Project root directory (engine folder)
 PROJECT_ROOT: Path = Path(__file__).resolve().parents[2]
 
 # Media directory location (project root /media)
 MEDIA_DIR: Path = PROJECT_ROOT / "media"
+
+CSV_DIR: Path = PROJECT_ROOT / "app" / "data"
